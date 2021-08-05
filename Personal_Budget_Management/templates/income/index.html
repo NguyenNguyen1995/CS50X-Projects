@@ -1,0 +1,88 @@
+{% extends "layout.html" %} {% block title %} Income {% endblock %} {% block
+main %} {% set total_income = incomes | sum(attribute='cash') %}
+<h2>Budget: Income</h2>
+
+<span class="float-right mb-3 mr-6"
+  ><a href="/add-income" class="text-success"
+    ><i class="fa fa-plus fa-2x" aria-hidden="true"></i></a
+></span>
+
+<table class="table table-borderless">
+  <thead>
+    <tr>
+      <th scope="col">Categories</th>
+      <th scope="col">Name</th>
+      <th scope="col">Cash</th>
+      <th scope="col" class="text-center">Edit</th>
+      <th scope="col" class="text-center">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if incomes %} {% for income in incomes %}
+    <tr>
+      <td hidden>{{income['id']}}</td>
+      <td>{{income['type']}}</td>
+      <td>
+        {{income['name']}}
+      </td>
+      <td class="income-cash">
+        {{income['cash'] | usd}}
+      </td>
+      <td class="text-center">
+        <a href="/edit-income/{{income['id']}}" class="btn btn-primary">Edit</a>
+      </td>
+      <td class="text-center">
+        <a href="/delete-income/{{income['id']}}" class="btn btn-danger"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    {% endfor %} {% endif %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2"><b>Total Income</b></td>
+      <td style="color: green;">
+        <b>{{ total_income | usd }}</b>
+      </td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="editField"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="editFieldTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit Field</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure want to save it?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/static/editable.js"></script>
+{% endblock %}

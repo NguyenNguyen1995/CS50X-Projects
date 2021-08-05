@@ -1,0 +1,118 @@
+{% extends "layout.html" %} {% block meta %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+{% endblock %} {% block title %} Home {% endblock %} {% block main %}
+<div style="width: 80%; height: 80%; margin: 0 auto;">
+  <canvas id="summary-pie-chart"></canvas>
+</div>
+
+<script>
+  chartSummary();
+
+  async function chartSummary() {
+    var ctx = document.getElementById("summary-pie-chart").getContext("2d");
+
+    const datas = await getData();
+
+    let type = "doughnut";
+
+    let animation = {
+      duration: 500,
+      easing: "easeOutQuart",
+      onComplete: function () {
+        var ctx = this.chart.ctx;
+        ctx.font = Chart.helpers.fontString(
+          Chart.defaults.global.defaultFontFamily,
+          "normal",
+          Chart.defaults.global.defaultFontFamily
+        );
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+
+        this.data.datasets.forEach(function (dataset) {
+          for (var i = 0; i < dataset.data.length; i++) {
+            var model =
+                dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+              total = dataset._meta[Object.keys(dataset._meta)[0]].total,
+              mid_radius =
+                model.innerRadius + (model.outerRadius - model.innerRadius) / 2,
+              start_angle = model.startAngle,
+              end_angle = model.endAngle,
+              mid_angle = start_angle + (end_angle - start_angle) / 2;
+
+            var x = mid_radius * Math.cos(mid_angle);
+            var y = mid_radius * Math.sin(mid_angle);
+
+            ctx.fillStyle = "#000";
+            if (i == 3) {
+              // Darker text color for lighter background
+              ctx.fillStyle = "#444";
+            }
+            if (dataset.data[i]) {
+              // print cash
+              let cash = `$${dataset.data[i].toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}`;
+              ctx.fillText(cash, model.x + x, model.y + y);
+            }
+            if (i == dataset.data.length - 1) {
+              let balance = dataset.data[0] - dataset.data[1];
+
+              let text = "";
+              if (balance < 0) {
+                balance *= -1;
+                text = `Balance: ($${balance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })})`;
+              } else {
+                text = `Balance: $${balance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}`;
+              }
+              ctx.fillText(text, model.x, model.y);
+            }
+          }
+        });
+      },
+    };
+
+    let options = {
+      events: [],
+      title: {
+        display: true,
+        text: "Your Budget",
+      },
+      animation: animation,
+    };
+
+    let data = {
+      labels: ["Income", "Spending"],
+      datasets: [
+        {
+          data: datas,
+          backgroundColor: ["rgba(0, 255, 0, 0.2)", "rgba(255, 0, 0, 0.2)"],
+          borderColor: ["rgba(0, 255, 0, 1)", "rgba(255, 0, 0, 1)"],
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    var myPieChart = new Chart(ctx, {
+      type: type,
+      data: data,
+      options: options,
+    });
+  }
+
+  async function getData() {
+    const numbers = [];
+    let response = await fetch("/summary");
+    let data = await response.json();
+    numbers.push(data[0]["total_income"]);
+    numbers.push(data[1]["total_spending"] * -1);
+    return numbers;
+  }
+</script>
+{% endblock %}

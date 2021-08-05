@@ -1,0 +1,40 @@
+{% extends "layout.html" %} {% block title %} Edit Budget Income {% endblock %}
+{% block main %}
+<h2>Edit: Income</h2>
+<hr />
+<form action="/edit-income/{{income['id']}}" method="post" id="income-form">
+  <div class="form-group">
+    <select class="form-control" id="income-categories" name="categories">
+      <option disabled>Income types</option>
+      {% for i_type in i_types %} {% if i_type['id'] == income['categories_id']
+      %}
+      <option value="{{i_type['name']}}" selected>{{i_type['name']}}</option>
+      {% else %}
+      <option value="{{i_type['name']}}">{{i_type['name']}}</option>
+      {% endif %} {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <input
+      class="form-control"
+      name="name"
+      placeholder="Name"
+      type="text"
+      min="3"
+      max="256"
+      value="{{income['name']}}"
+    />
+  </div>
+  <div class="form-group">
+    <input
+      class="form-control"
+      name="cash"
+      placeholder="Cash"
+      type="text"
+      value="{{income['cash']}}"
+    />
+  </div>
+  <button class="btn btn-primary" type="submit">Edit</button>
+  <a class="btn btn-danger ml-3" href="/income">Cancel</a>
+</form>
+{% endblock %}

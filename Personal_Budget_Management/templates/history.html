@@ -1,0 +1,25 @@
+{% extends "layout.html" %} {% block title %} History {% endblock %} {% block
+main %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Kind</th>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Balance</th>
+      <th>Created</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td>{{row["kind"]}}</td>
+      <td>{{row["type"]}}</td>
+      <td>{{row["name"]}}</td>
+      <td>{{row["cash"] | usd}}</td>
+      <td>{{row["created"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

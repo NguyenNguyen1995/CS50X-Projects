@@ -1,0 +1,30 @@
+{% extends "layout.html" %} {% block title %} Add Budget Spending {% endblock %}
+{% block main %}
+<h2>Add: Spending</h2>
+<hr />
+<form action="/add-spending" method="post" id="spending-form">
+  <div class="form-group">
+    <select class="form-control" id="spending-categories" name="categories">
+      <option selected disabled>Spending types</option>
+      {% for sp_type in spending_types %}
+      <option value="{{sp_type['name']}}">{{sp_type['name']}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <input
+      class="form-control"
+      name="name"
+      placeholder="Name"
+      type="text"
+      min="3"
+      max="256"
+    />
+  </div>
+  <div class="form-group">
+    <input class="form-control" name="cash" placeholder="Cash" type="text" />
+  </div>
+  <button class="btn btn-primary" type="submit">Add</button>
+</form>
+
+{% endblock %}
